@@ -1,0 +1,41 @@
+= Tolerant Reader
+
+Principe de robutesse de la loi de Postel d'un client d'API
+
+> Soyez stricte sur ce que vous envoyez, tolérant sur ce que vous lisez
+
+. En tant que fournisseur d'API, je fais évoluer le contenu de mes réponses uniquement si nécessaire sans casser mon contrat de service
+. En tant que client d'une API, j'accepte qu'une réponse qui m'est renvoyée soit enrichie
+
+== Client side
+Soit un client d'API `cars-client`, qui tourne sur `http://localhost:8081` et consomme `http://localhost:8080/v1/cars/{UUID}`.
+Le contrat de service s'attend à ce que la réponse soit :
+
+[source, json]
+----
+{
+  "id": "298b8897-9962-41cf-97ac-5ac032c0f5e2",
+  "vendor": "Renault",
+  "modele": "Clio"
+}
+----
+
+== Server side
+Soit un fournisseur d'API `cars-api`, qui me répond sur le endpoint `http://localhost:8080/v1/cars/298b8897-9962-41cf-97ac-5ac032c0f5e2`
+
+[source, json]
+----
+{
+  "id": "298b8897-9962-41cf-97ac-5ac032c0f5e2",
+  "vendor": "Renault", #<1>
+  "revendeur": "Renault", #<2>
+  "modele": "Clio",
+  "couleur": "Bleue" #<3>
+}
+----
+<1> je continue de renvoyer `vendor` pour respecter mon contrat de service
+<2> l'attribut `vendor` a été renommé `revendeur`
+<3> l'attribut `couleur` a été rajouté
+
+== Ref
+https://martinfowler.com/bliki/TolerantReader.html
